@@ -1,0 +1,133 @@
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+*default*        0x0000000000000000 0xffffffffffffffff
+
+Linker script and memory map
+
+LOAD exc.o
+LOAD memory_barrier.o
+LOAD start.o
+LOAD gpio.o
+LOAD interrupt.o
+LOAD print.o
+LOAD timer.o
+                0x0000000000008000                . = 0x8000
+                0x0000000000008000                _start = .
+                0x0000000000008000                _text_start = .
+
+.text           0x0000000000008000      0xa80
+ *(.text.init)
+ .text.init     0x0000000000008000       0x94 start.o
+                0x0000000000008000                start
+ *(.text)
+ .text          0x0000000000008094      0x1dc exc.o
+                0x0000000000008230                init_exception_vector
+ .text          0x0000000000008270       0x14 memory_barrier.o
+                0x0000000000008270                dmb
+ .text          0x0000000000008284      0x2b4 start.o
+                0x0000000000008284                panic
+                0x000000000000843c                draw_char
+                0x0000000000008498                print_string
+ .text          0x0000000000008538       0xc4 gpio.o
+                0x0000000000008538                turn_OK_LED
+                0x0000000000008558                blink_OK_LED
+                0x00000000000085a0                set_gpio_fn
+ .text          0x00000000000085fc       0x20 interrupt.o
+                0x00000000000085fc                init_ic
+ .text          0x000000000000861c      0x418 print.o
+                0x000000000000861c                u32_div
+                0x000000000000875c                vsprintf
+                0x0000000000008958                printf
+                0x00000000000089a4                strcpy
+                0x00000000000089f0                test
+ .text          0x0000000000008a34       0x4c timer.o
+                0x0000000000008a34                init_timer
+
+.glue_7         0x0000000000008a80        0x0
+ .glue_7        0x0000000000000000        0x0 linker stubs
+
+.glue_7t        0x0000000000008a80        0x0
+ .glue_7t       0x0000000000000000        0x0 linker stubs
+
+.vfp11_veneer   0x0000000000008a80        0x0
+ .vfp11_veneer  0x0000000000000000        0x0 linker stubs
+
+.v4_bx          0x0000000000008a80        0x0
+ .v4_bx         0x0000000000000000        0x0 linker stubs
+
+.iplt           0x0000000000008a80        0x0
+ .iplt          0x0000000000000000        0x0 exc.o
+                0x0000000000009000                . = ALIGN (0x1000)
+                0x0000000000009000                _text_end = .
+                0x0000000000009000                _rodata_start = .
+
+.rodata         0x0000000000009000       0x7c
+ *(.rodata)
+ .rodata        0x0000000000009000       0x7c exc.o
+
+.rodata.str1.4  0x000000000000907c       0x14
+ .rodata.str1.4
+                0x000000000000907c       0x14 print.o
+
+.rel.dyn        0x0000000000009090        0x0
+ .rel.iplt      0x0000000000000000        0x0 exc.o
+                0x000000000000a000                . = ALIGN (0x1000)
+                0x000000000000a000                _rodata_end = .
+                0x000000000000a000                _data_start = .
+
+.data           0x000000000000a000     0x2000
+ *(.data)
+ .data          0x000000000000a000        0x0 exc.o
+ .data          0x000000000000a000        0x0 memory_barrier.o
+ .data          0x000000000000a000     0x2000 start.o
+ .data          0x000000000000c000        0x0 gpio.o
+ .data          0x000000000000c000        0x0 interrupt.o
+ .data          0x000000000000c000        0x0 print.o
+ .data          0x000000000000c000        0x0 timer.o
+
+.igot.plt       0x000000000000c000        0x0
+ .igot.plt      0x0000000000000000        0x0 exc.o
+                0x000000000000c000                . = ALIGN (0x1000)
+                0x000000000000c000                _data_end = .
+                0x000000000000c000                _bss_start = .
+
+.bss            0x000000000000c000        0x0
+                0x000000000000c000                bss = .
+ *(.bss)
+ .bss           0x000000000000c000        0x0 exc.o
+ .bss           0x000000000000c000        0x0 memory_barrier.o
+ .bss           0x000000000000c000        0x0 start.o
+ .bss           0x000000000000c000        0x0 gpio.o
+ .bss           0x000000000000c000        0x0 interrupt.o
+ .bss           0x000000000000c000        0x0 print.o
+ .bss           0x000000000000c000        0x0 timer.o
+                0x000000000000c000                . = ALIGN (0x1000)
+                0x000000000000c000                _bss_end = .
+                0x000000000000c000                _end = .
+OUTPUT(kernel.elf elf32-littlearm)
+
+.ARM.attributes
+                0x0000000000000000       0x34
+ .ARM.attributes
+                0x0000000000000000       0x26 exc.o
+ .ARM.attributes
+                0x0000000000000026       0x26 memory_barrier.o
+ .ARM.attributes
+                0x000000000000004c       0x26 start.o
+ .ARM.attributes
+                0x0000000000000072       0x38 gpio.o
+ .ARM.attributes
+                0x00000000000000aa       0x38 interrupt.o
+ .ARM.attributes
+                0x00000000000000e2       0x38 print.o
+ .ARM.attributes
+                0x000000000000011a       0x38 timer.o
+
+.comment        0x0000000000000000       0x70
+ .comment       0x0000000000000000       0x70 gpio.o
+                                         0x71 (size before relaxing)
+ .comment       0x0000000000000000       0x71 interrupt.o
+ .comment       0x0000000000000000       0x71 print.o
+ .comment       0x0000000000000000       0x71 timer.o
